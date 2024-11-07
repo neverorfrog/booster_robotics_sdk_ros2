@@ -20,6 +20,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ImuState.msg"
   "msg/LowState.msg"
   "msg/RawBytesMsg.msg"
+  "msg/Odometer.msg"
   "srv/RpcService.srv"
 )
 
