@@ -1,7 +1,7 @@
 #pragma once
 
 #include "booster_interface/msg/booster_api_req_msg.hpp"
-#include <booster/robot/common/robot_mode.hpp>
+#include <booster/robot/common/robot_shared.hpp>
 #include <booster/robot/b1/b1_api_const.hpp>
 #include <booster/robot/b1/b1_loco_api.hpp>
 
