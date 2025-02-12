@@ -22,10 +22,17 @@ int main(int argc, char **argv) {
     auto request =
         std::make_shared<booster_interface::srv::RpcService::Request>();
     auto req_msg = booster_interface::CreateSwitchHandEndEffectorControlModeMsg(true);
+    auto req_msg_close = booster_interface::CreateSwitchHandEndEffectorControlModeMsg(false);
+    auto req_move_msg = booster_interface::CreateMoveMsg(0.5, 0.0, 0.0);
+    auto req_move_msg_zero = booster_interface::CreateMoveMsg(0.0, 0.0, 0.0);
+
+    booster::robot::Posture tar_posture;
+    tar_posture.position_ = booster::robot::Position(0.35, 0.25, 0.1);
+    tar_posture.orientation_ = booster::robot::Orientation(0., 0., 0.);
+    auto req_move_hand_end_effector_msg = booster_interface::CreateMoveHandEndEffectorMsg(tar_posture, 2000, booster::robot::b1::HandIndex::kLeftHand);
     // auto req_msg = booster_interface::CreateChangeModeMsg(booster::robot::RobotMode::kDamping);
     // auto req_msg = booster_interface::CreateLieDownMsg();
-    request->msg = req_msg;
-
+    
     while (!client->wait_for_service(1s)) {
         if (!rclcpp::ok()) {
             RCLCPP_ERROR(rclcpp::get_logger("rclcpp"),
@@ -37,6 +44,9 @@ int main(int argc, char **argv) {
     }
 
     while (rclcpp::ok()) {
+
+        // change to hand end effector control mode
+        request->msg = req_msg;
         auto result = client->async_send_request(request);
         // Wait for the result.
         if (rclcpp::spin_until_future_complete(node, result) == rclcpp::FutureReturnCode::SUCCESS) {
@@ -45,7 +55,55 @@ int main(int argc, char **argv) {
         } else {
             RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call rpc service");
         }
-        // std::this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(2s);
+
+        // start to move
+        request->msg = req_move_msg;
+        result = client->async_send_request(request);
+        // Wait for the result.
+        if (rclcpp::spin_until_future_complete(node, result) == rclcpp::FutureReturnCode::SUCCESS) {
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sum: %s",
+                        result.get()->msg.body.c_str());
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call rpc service");
+        }
+        std::this_thread::sleep_for(2s);
+
+        // move hand end effector
+        request->msg = req_move_hand_end_effector_msg;
+        result = client->async_send_request(request);
+        // Wait for the result.
+        if (rclcpp::spin_until_future_complete(node, result) == rclcpp::FutureReturnCode::SUCCESS) {
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sum: %s",
+                        result.get()->msg.body.c_str());
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call rpc service");
+        }
+        std::this_thread::sleep_for(20s);
+
+        // stop moving
+        request->msg = req_move_msg_zero;
+        result = client->async_send_request(request);
+        // Wait for the result.
+        if (rclcpp::spin_until_future_complete(node, result) == rclcpp::FutureReturnCode::SUCCESS) {
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sum: %s",
+                        result.get()->msg.body.c_str());
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call rpc service");
+        }
+        std::this_thread::sleep_for(2s);
+
+        // change to hand end effector control mode
+        request->msg = req_msg_close;
+        result = client->async_send_request(request);
+        // Wait for the result.
+        if (rclcpp::spin_until_future_complete(node, result) == rclcpp::FutureReturnCode::SUCCESS) {
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sum: %s",
+                        result.get()->msg.body.c_str());
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to call rpc service");
+        }
+        std::this_thread::sleep_for(10s);
     }
 
     rclcpp::shutdown();
