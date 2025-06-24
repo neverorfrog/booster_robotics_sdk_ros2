@@ -22,6 +22,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LowState.msg"
   "msg/RawBytesMsg.msg"
   "msg/Odometer.msg"
+  "msg/FallDownState.msg"
   "msg/RemoteControllerState.msg"
   "msg/HandCommand.msg"
   "msg/HandDdsMsg.msg"
