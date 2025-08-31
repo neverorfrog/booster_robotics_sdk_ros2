@@ -1,1 +1,1 @@
-uint32 posturing
+int32 posture
