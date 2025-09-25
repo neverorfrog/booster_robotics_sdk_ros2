@@ -24,28 +24,19 @@ if (ORIN)
     set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
     set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
-    IF(NOT BOOSTER_THIRD_PARTY_INCLUDE_DIR)
-        SET(BOOSTER_THIRD_PARTY_INCLUDE_DIR /opt/robosys/third_party_orin/include CACHE PATH "Booster third party include dir")
-    ENDIF()
-
-    IF(NOT BOOSTER_THIRD_PARTY_LIB_DIR)
-        SET(BOOSTER_THIRD_PARTY_LIB_DIR /opt/robosys/third_party_orin/lib CACHE PATH "Booster third party lib dir")
-    ENDIF()
-
-    include_directories(${BOOSTER_THIRD_PARTY_INCLUDE_DIR})
-    link_directories(${BOOSTER_THIRD_PARTY_LIB_DIR})
 else()
     SET(CMAKE_CXX_STANDARD 17)
 endif()
 
 project(
-  ${SKBUILD_PROJECT_NAME}
-  VERSION ${SKBUILD_PROJECT_VERSION}
+  booster_robotics_sdk_ros2
+  VERSION 1.0.0
   LANGUAGES CXX)
 
 cmake_minimum_required(VERSION 3.15...3.27)
 
 SET(LIB_BOOSTER_ROBOTICS_SDK_ROS2 booster_robotics_sdk_ros2 CACHE STRING "Booster Robotics SDK ROS2")
+
 
 if(ORIN)
     set(PLATFORM_SUFFIX "_orin")
@@ -55,7 +46,7 @@ if(ORIN)
         set(INSTALL_DIR /opt/robosys CACHE PATH "rs_sdk install dir")
     endif()
 
-    set(LIB_INSTALL_PREFIX ${INSTALL_DIR}/${LIB_BOOSTER_ROBOTICS_SDK}${PLATFORM_SUFFIX})
+    set(LIB_INSTALL_PREFIX ${INSTALL_DIR}/${LIB_BOOSTER_ROBOTICS_SDK_ROS2}${PLATFORM_SUFFIX})
 else()
     set(LIB_INSTALL_PREFIX ${CMAKE_INSTALL_LIBDIR})
 endif()
@@ -64,26 +55,31 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(CMAKE_CXX_STANDARD 17)
 
-include_directories(BEFORE $(PROJECT_SOURCE_DIR)/include)
-include_directories(BEFORE $(PROJECT_SOURCE_DIR)/include/booster/idl/b1)
-include_directories(BEFORE $(PROJECT_SOURCE_DIR)/internal_include)
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(booster_interface REQUIRED)
+find_package(booster_msgs)
+find_package(rosidl_default_generators REQUIRED)
 
-file(GLOB_RECURSE BOOSTER_ROBOTICS_SDK_SOURCES 
+SET(BOOSTER_SDK_INCLUDE_DIR ${CMAKE_SOURCE_DIR}../booster_robotics_sdk/include)
+include_directories(BEFORE $(PROJECT_SOURCE_DIR)/include/robot/ai)
+
+file(GLOB_RECURSE BOOSTER_ROBOTICS_SDK_ROS2_SOURCES
     "src/*.cpp"
     "src/*.cxx"
     "src/*.ipp")
 
-list(FILTER BOOSTER_ROBOTICS_SDK_SOURCES EXCLUDE REGEX "src/python/.*\\.cpp")
-
-file(GLOB_RECURSE BOOSTER_ROBOTICS_SDK_HEADERS 
+file(GLOB_RECURSE BOOSTER_ROBOTICS_SDK_ROS2_HEADERS 
     "include/*.h"
     "include/*.hpp")
-file(GLOB_RECURSE DEMO_TEST_SOURCES 
-    "test/demo_test/*.cpp"
-    "test/demo_test/*.cxx"
-    "test/demo_test/*.ipp")
 
-add_library(${LIB_BOOSTER_ROBOTICS_SDK} ${BOOSTER_ROBOTICS_SDK_SOURCES})
+add_library(${LIB_BOOSTER_ROBOTICS_SDK_ROS2} ${BOOSTER_ROBOTICS_SDK_ROS2_SOURCES})
 
-link_libraries(${LIB_BOOSTER_ROBOTICS_SDK} fastrtps fastcdr libfoonathan_memory-0.7.3.a)
+ament_target_dependencies(booster_robotics_sdk_ros2
+  rclcpp
+  std_msgs
+  booster_interface)
 
+link_libraries(booster_robotics_sdk_ros2)

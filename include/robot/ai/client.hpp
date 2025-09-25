@@ -1,9 +1,17 @@
 #pragma once
-#include "client.hpp"
+#include <memory>
+#include <string>
+#include <cstdint>
+#include "booster/robot/ai/api.hpp"
+#include "booster_interface/srv/rpc_service.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp/executor.hpp"
 
+#include <booster/robot/rpc/request_header.hpp>
+#include <booster/robot/rpc/response_header.hpp>
+#include <booster/robot/rpc/error.hpp>
 
-
-using namespace booster::robot;
+//using namespace booster::robot;
 
 namespace booster {
 namespace robot {
@@ -80,6 +88,7 @@ public:
     }
 
 private:
+    booster_interface::msg::BoosterApiReqMsg GenerateMsg(const int64_t api, const std::string &body);
     std::shared_ptr<rclcpp::Node> rtc_node_;
     const std::string kServiceRtc = "booster_rtc_service";
     rclcpp::Client<booster_interface::srv::RpcService>::SharedPtr rpc_client_;

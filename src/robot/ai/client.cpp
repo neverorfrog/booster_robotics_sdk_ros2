@@ -1,12 +1,4 @@
-#include "booster_interface/srv/rpc_service.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp/executor.hpp"
-
-#include <booster/robot/rpc/request_header.hpp>
-#include <booster/robot/rpc/response_header.hpp>
-#include <booster/robot/rpc/error.hpp>
-
-#include <iostream>
+#include "client.hpp"
 
 namespace booster {
 namespace robot {
@@ -19,7 +11,7 @@ void AiClient::Init() {
 
 int32_t AiClient::SendApiRequestWithResponse(AiApiId api_id, const std::string &param) {
     auto req = std::make_shared<booster_interface::srv::RpcService::Request>();
-    req->msg = GenerateMsg(api_id, body);
+    req->msg = GenerateMsg((int64_t)api_id, param);
 
     auto future = rpc_client_->async_send_request(req);
     if (rclcpp::spin_until_future_complete(rtc_node_, future) != rclcpp::FutureReturnCode::SUCCESS) {
