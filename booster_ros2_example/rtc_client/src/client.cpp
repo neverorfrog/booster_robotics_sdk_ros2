@@ -62,11 +62,11 @@ int main(int argc, char **argv) {
   std::this_thread::sleep_for(2s);
 
   // Speak
-  booster::robot::SpeekParameter speak_param;
+  booster::robot::SpeakParameter speak_param;
   speak_param.msg_ = "I love robot";
   body = speak_param.ToJson().dump();
   req = std::make_shared<booster_interface::srv::RpcService::Request>();
-  req->msg = GenerateMsg((int64_t)booster::robot::AiApiId::kSpeek, body);
+  req->msg = GenerateMsg((int64_t)booster::robot::AiApiId::kSpeak, body);
 
    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Sending API ID: %ld, Body: %s", req->msg.api_id,
              req->msg.body.c_str());
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
   }
 
   response = future.get()->msg;
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Speek: %ld", response.status);
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Speak: %ld", response.status);
 
   std::this_thread::sleep_for(2s);
 
