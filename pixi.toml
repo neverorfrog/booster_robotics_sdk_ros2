@@ -1,0 +1,13 @@
+[workspace]
+name = "booster_robotics_sdk_ros2"
+version = "0.1.0"
+platforms = ["linux-64"]
+channels = [
+  "https://prefix.dev/pixi-build-backends",
+  "https://prefix.dev/conda-forge",
+  "https://prefix.dev/robostack-humble",
+]
+preview = ["pixi-build"]
+
+[dependencies]
+ros-humble-booster-interface = { path = "booster_ros2_interface" }
