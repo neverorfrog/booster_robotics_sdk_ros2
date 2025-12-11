@@ -11,3 +11,16 @@ preview = ["pixi-build"]
 
 [dependencies]
 ros-humble-booster-interface = { path = "booster_ros2_interface" }
+
+[package]
+name = "booster_robotics_sdk_ros2"
+version = "1.0.0"
+
+[package.build]
+backend = { name = "pixi-build-cmake", version = "0.3.*" }
+
+[package.build-dependencies]
+cmake = "4.1.*"
+
+[package.host-dependencies]
+tinyxml2 = "==9"

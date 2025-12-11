@@ -34,6 +34,15 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AgentService.srv"
 )
 
+# Patch generated C++ files to add missing cstdint include
+# This fixes a bug in rosidl_generator_cpp with certain versions
+add_custom_command(TARGET ${PROJECT_NAME}__rosidl_generator_c POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E echo "Patching generated headers for cstdint..."
+  COMMAND find ${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_cpp -name "*__struct.hpp" -exec sed -i "16i\\#include <cstdint>" {} \;
+  COMMENT "Adding missing cstdint includes to generated headers"
+  VERBATIM
+)
+
 # 安装头文件
 install(DIRECTORY include/
   DESTINATION include/

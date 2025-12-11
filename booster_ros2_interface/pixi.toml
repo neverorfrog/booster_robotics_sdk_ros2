@@ -1,6 +1,7 @@
 [package.build.backend]
 channels = [
   "https://prefix.dev/pixi-build-backends",
+  "https://prefix.dev/robostack-humble",
   "https://prefix.dev/conda-forge",
 ]
 name = "pixi-build-ros"
@@ -8,3 +9,7 @@ version = "*"
 
 [package.build.config]
 distro = "humble"
+
+[package.host-dependencies]
+python = "3.9.*"
+tinyxml2 = "==9"
